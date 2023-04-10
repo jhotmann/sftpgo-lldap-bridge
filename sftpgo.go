@@ -35,7 +35,8 @@ func getSftpToken() {
 	}
 
 	if resp.StatusCode() < 200 || resp.StatusCode() > 299 {
-		log.Fatal("Received " + resp.Status() + " getting SFTPGO token")
+		log.Printf("Received " + resp.Status() + " getting SFTPGO token\n")
+		return
 	}
 
 	sftpgoClient.SetAuthToken(tokenResponse.AccessToken)
