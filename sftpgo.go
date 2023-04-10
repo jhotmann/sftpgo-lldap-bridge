@@ -4,17 +4,20 @@ import (
 	"errors"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/go-resty/resty/v2"
 	"github.com/sftpgo/sdk"
 )
 
 var (
-	sftpgoClient *resty.Client
+	sftpgoClient          *resty.Client
+	sftpgoTokenExpiration time.Time
 )
 
 type SftpgoTokenResponse struct {
-	AccessToken string `json:"access_token"`
+	AccessToken string    `json:"access_token"`
+	ExpiresAt   time.Time `json:"expires_at"`
 }
 
 func initSftpGoClient() {
@@ -40,9 +43,14 @@ func getSftpToken() {
 	}
 
 	sftpgoClient.SetAuthToken(tokenResponse.AccessToken)
+	log.Printf("SFTPGo token will expire at %t", tokenResponse.ExpiresAt)
+	sftpgoTokenExpiration = tokenResponse.ExpiresAt
 }
 
 func getSftpGroups(retry int) ([]sdk.Group, error) {
+	if time.Now().After(sftpgoTokenExpiration) {
+		initSftpGoClient()
+	}
 	var groups []sdk.Group
 	resp, err := sftpgoClient.R().
 		SetResult(&groups).
