@@ -43,7 +43,7 @@ func getSftpToken() {
 	}
 
 	sftpgoClient.SetAuthToken(tokenResponse.AccessToken)
-	log.Printf("SFTPGo token will expire at %t", tokenResponse.ExpiresAt)
+	log.Printf("SFTPGo token will expire at %s", tokenResponse.ExpiresAt.Format("2006-01-02T15:04:05Z07:00"))
 	sftpgoTokenExpiration = tokenResponse.ExpiresAt
 }
 
