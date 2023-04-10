@@ -17,7 +17,7 @@ type SftpgoTokenResponse struct {
 	AccessToken string `json:"access_token"`
 }
 
-func init() {
+func initSftpGoClient() {
 	sftpgoClient = resty.New().SetBaseURL(config.Sftpgo.BaseURL)
 
 	getSftpToken()
@@ -54,7 +54,7 @@ func getSftpGroups(retry int) ([]sdk.Group, error) {
 
 	if resp.StatusCode() < 200 || resp.StatusCode() > 299 {
 		if resp.StatusCode() == http.StatusUnauthorized && retry < 3 {
-			getSftpToken()
+			initSftpGoClient()
 			return getSftpGroups(retry + 1)
 		} else {
 			return groups, errors.New("Received " + resp.Status() + " getting SFTPGo groups")

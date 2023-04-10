@@ -31,6 +31,7 @@ type LoginData struct {
 }
 
 func main() {
+	initSftpGoClient()
 	cache = timedmap.New(10 * time.Second)
 
 	log.Println("Starting SFTPGo LLDAP Bridge")
