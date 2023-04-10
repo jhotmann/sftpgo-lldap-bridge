@@ -92,7 +92,7 @@ func loginHander(w http.ResponseWriter, r *http.Request) {
 	var sftpgoGroups []sdk.Group
 	if !cache.Contains(SFTPGO_GROUPS_KEY) {
 		log.Printf("Updating SFTPGo groups cache")
-		sftpgoGroups, err = getSftpGroups()
+		sftpgoGroups, err = getSftpGroups(0)
 		if err != nil {
 			log.Printf("Error getting LLDAP user data for '%s': %v\n", data.Username, err)
 			w.WriteHeader(http.StatusInternalServerError)
