@@ -1,0 +1,27 @@
+lldap:
+  # The URL of your LLDAP instance, can be overwritten by env variable LLDAP_URL
+  base-url: ""
+  # A LLDAP group that a user must belong to in order to access SFTPGo (optional)
+  # Can be overwritten by env variable LLDAP_REQUIRED_URL
+  required-group: ""
+
+sftpgo:
+  # The URL of your SFTPGo instance, can be overwritten by env variable SFTPGO_URL
+  base-url: ""
+  # SFTPGo admin account, can be overwritten by env variable SFTPGO_ADMIN_USER
+  user: ""
+  # SFTPGo admin password, can be overwritten by env variable SFTPGO_ADMIN_PASSWORD
+  password: ""
+  # Useful if you have a group in SFTPGo with base user config that you don't have in LLDAP (optional)
+  default-primary-group: ""
+
+# Map LLDAP group names to SFTPGo group names if they are different (optional)
+# If group names match across services and there is no mapping defined, it will default to a type of 2
+# https://github.com/drakkan/sftpgo/blob/main/docs/groups.md
+group-mappings:
+  - lldap: media-writers
+    sftpgo: MediaWriters
+    group-type: 2
+  - lldap: media-readers
+    sftpgo: MediaReaders
+    group-type: 2

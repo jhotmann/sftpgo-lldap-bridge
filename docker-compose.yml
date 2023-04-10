@@ -1,0 +1,42 @@
+version: '3.9'
+
+services:
+  lldap:
+    image: nitnelave/lldap:stable
+    ports:
+      - 17170:17170
+      - 3890:3890
+    volumes:
+      - lldap_data:/data
+    environment:
+      - LLDAP_JWT_SECRET=supersecretstring
+      - LLDAP_LDAP_USER_PASS=lldapadmin
+      - LLDAP_LDAP_BASE_DN=dc=example,dc=com
+  sftpgo:
+    image: ghcr.io/drakkan/sftpgo:v2
+    restart: unless-stopped
+    ports:
+      - 8080:8080
+    volumes:
+      - sftpgo_data:/srv/sftpgo
+      - sftpgo_config:/var/lib/sftpgo
+      - ./test-media:/mnt/media
+    environment:
+      - SFTPGO_DATA_PROVIDER__EXTERNAL_AUTH_HOOK=http://sftpgo-lldap-bridge:8000/login
+      - SFTPGO_DATA_PROVIDER__EXTERNAL_AUTH_SCOPE=1
+  sftpgo-lldap-bridge:
+    build: .
+    restart: unless-stopped
+    volumes:
+      - ./config.yml:/config/config.yml
+    environment:
+      - LLDAP_URL=http://lldap:17170
+      - SFTPGO_URL=http://sftpgo:8080
+      - SFTPGO_ADMIN_USER=admin
+      - SFTPGO_ADMIN_PASSWORD=test
+      - CONFIG_DIR=/config
+
+volumes:
+  lldap_data: {}
+  sftpgo_data: {}
+  sftpgo_config: {}
