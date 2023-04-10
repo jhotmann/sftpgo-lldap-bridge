@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"log"
+	"net/http"
 
 	"github.com/go-resty/resty/v2"
 	"github.com/sftpgo/sdk"
@@ -40,7 +41,7 @@ func getSftpToken() {
 	sftpgoClient.SetAuthToken(tokenResponse.AccessToken)
 }
 
-func getSftpGroups() ([]sdk.Group, error) {
+func getSftpGroups(retry int) ([]sdk.Group, error) {
 	var groups []sdk.Group
 	resp, err := sftpgoClient.R().
 		SetResult(&groups).
@@ -51,7 +52,12 @@ func getSftpGroups() ([]sdk.Group, error) {
 	}
 
 	if resp.StatusCode() < 200 || resp.StatusCode() > 299 {
-		return groups, errors.New("Received " + resp.Status() + " getting SFTPGo groups")
+		if resp.StatusCode() == http.StatusUnauthorized && retry < 3 {
+			getSftpToken()
+			return getSftpGroups(retry + 1)
+		} else {
+			return groups, errors.New("Received " + resp.Status() + " getting SFTPGo groups")
+		}
 	}
 
 	return groups, nil
