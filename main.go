@@ -31,10 +31,11 @@ type LoginData struct {
 }
 
 func main() {
+	log.Println("Starting SFTPGo LLDAP Bridge")
+
 	initSftpGoClient()
 	cache = timedmap.New(10 * time.Second)
 
-	log.Println("Starting SFTPGo LLDAP Bridge")
 	http.HandleFunc("/login", loginHander)
 
 	err := http.ListenAndServe(":8000", nil)
